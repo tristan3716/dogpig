@@ -34,7 +34,7 @@
               "node_modules/@clr/ui/clr-ui.min.css",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": ["node_modules/chance/dist/chance.min.js"]
           },
           "configurations": {
             "production": {

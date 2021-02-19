@@ -65,6 +65,9 @@
         <clr-dg-column [clrDgColType]="'number'" [clrDgField]="'올스탯%'"
           >올스탯%</clr-dg-column
         >
+        <clr-dg-column [clrDgColType]="'number'" [clrDgField]="'급'"
+          >급</clr-dg-column
+        >
 
         <clr-dg-row *clrDgItems="let log of logList">
           <clr-dg-cell>{{ log["STR"] }}</clr-dg-cell>
@@ -80,6 +83,7 @@
           <clr-dg-cell>{{ log["이동속도"] }}</clr-dg-cell>
           <clr-dg-cell>{{ log["점프력"] }}</clr-dg-cell>
           <clr-dg-cell>{{ log["올스탯%"] }}</clr-dg-cell>
+          <clr-dg-cell>{{ log["급"] }}</clr-dg-cell>
         </clr-dg-row>
 
         <clr-dg-footer>

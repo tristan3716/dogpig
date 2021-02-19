@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { getStatTable, gradeTable } from './table';
+import { getStatTable, gradeTable, weightTable } from './table';
+import * as Chance from 'chance';
+const chance = new Chance();
 
 @Component({
   selector: 'app-root',
@@ -17,10 +19,19 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  private arrayPick(arr: string[]): [string, number] {
+  private pickWeighted(arr: string[]): string {
+    if (arr.length === 0) {
+      return '';
+    }
+    return chance.weighted(
+      arr,
+      arr.map((x) => weightTable[x])
+    );
+  }
+
+  private pickUniform(arr: string[]): string {
     const random = Math.floor(Math.random() * arr.length);
-    const result = arr[random];
-    return [result, random];
+    return arr[random];
   }
 
   private getGrade(type: string): number {
@@ -50,6 +61,12 @@ export class AppComponent implements OnInit {
         stat[item] = 0;
       }
     }
+    stat.급 = Math.max(
+      stat.STR + stat.공격력 * 4 + stat['올스탯%'] * 10,
+      stat.DEX + stat.마력 * 4 + stat['올스탯%'] * 10,
+      stat.INT + stat.마력 * 4 + stat['올스탯%'] * 10,
+      stat.LUK + stat.공격력 * 4 + stat['올스탯%'] * 10
+    );
     this.logList.push(stat);
   }
 
@@ -58,27 +75,29 @@ export class AppComponent implements OnInit {
     const statList = Object.keys(statTable);
     const selected = [];
 
-    for (let i = 0; i <= 1; i += 1) {
-      const [result, index] = this.arrayPick(statList);
+    const result = this.pickWeighted(statList);
+    selected.push(result);
+
+    let index = statList.indexOf(result);
+    for (let i = 1; i <= 3; i += 1) {
       const statLeft = statList.slice(0, index);
       const statRight = statList.slice(index + 1);
-      selected.push(result);
       statList.splice(index, 1);
 
-      const [resultLeft, indexLeft] = this.arrayPick(statLeft);
-      const [resultRight, indexRight] = this.arrayPick(statRight);
+      const resultLeft = this.pickWeighted(statLeft);
+      const resultRight = this.pickWeighted(statRight);
       if (statLeft.length === 0) {
         selected.push(resultRight);
-        statList.splice(statList.indexOf(resultRight), 1);
+        index = statList.indexOf(resultRight);
       } else if (statRight.length === 0) {
         selected.push(resultLeft);
-        statList.splice(statList.indexOf(resultLeft), 1);
+        index = statList.indexOf(resultLeft);
       } else if (Math.random() < 0.5) {
         selected.push(resultLeft);
-        statList.splice(statList.indexOf(resultLeft), 1);
+        index = statList.indexOf(resultLeft);
       } else {
         selected.push(resultRight);
-        statList.splice(statList.indexOf(resultRight), 1);
+        index = statList.indexOf(resultRight);
       }
     }
 
@@ -91,7 +110,8 @@ export class AppComponent implements OnInit {
     const selected = [];
 
     for (let i = 0; i <= 3; i += 1) {
-      const [result, index] = this.arrayPick(statList);
+      const result = this.pickUniform(statList);
+      const index = statList.indexOf(result);
       selected.push(result);
       statList.splice(index, 1);
     }

@@ -3,6 +3,28 @@ export const gradeTable: Record<string, number[]> = {
   '영원한 환생의 불꽃': [0, 0, 0, 0, 0.29, 0.45, 0.25, 0.01],
 };
 
+export const weightTable: Record<string, number> = {
+  STR: 5,
+  DEX: 5,
+  INT: 5,
+  LUK: 5,
+  'STR|DEX': 7,
+  'STR|INT': 7,
+  'STR|LUK': 7,
+  'DEX|INT': 7,
+  'DEX|LUK': 7,
+  'INT|LUK': 7,
+  MaxHP: 8,
+  MaxMP: 8,
+  '착용 레벨 감소': 4,
+  방어력: 9,
+  공격력: 8,
+  마력: 8,
+  이동속도: 10,
+  점프력: 10,
+  '올스탯%': 1,
+};
+
 export function getStatTable(level: number): Record<string, number> {
   return {
     STR: Math.floor(level / 20) + 1,
