@@ -88,13 +88,11 @@ export class AppComponent implements OnInit {
     this.logList.push(stat);
 
     const numbers = this.logList.map((x) => x.급);
-    const maximum = Math.max(...numbers);
-    const minimum = Math.min(...numbers);
     const category = [];
     const values = [];
-    for (let i = Math.floor(minimum / 10) * 10; i < maximum; i += 10) {
+    for (let i = 0; i <= 190; i += 10) {
       category.push(i);
-      values.push(numbers.filter((x) => x >= i && x < i + 10).length);
+      values.push(numbers.filter((x) => x >= i && x < i + 10).length / numbers.length);
     }
     this.chartOption = {
       tooltip: {},
@@ -104,6 +102,7 @@ export class AppComponent implements OnInit {
       },
       yAxis: {
         type: 'value',
+        max: Math.max(0.3, ...values),
       },
       series: {
         type: 'bar',
