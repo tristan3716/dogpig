@@ -10,6 +10,7 @@ export class AppComponent implements OnInit {
   title = 'dogpig';
   level = 150;
   type = '영원한 환생의 불꽃';
+  mode = '본섭';
   logList: any[] = [];
 
   constructor() {}
@@ -35,7 +36,24 @@ export class AppComponent implements OnInit {
     throw Error('Fail');
   }
 
-  roll(): void {
+  private addLog(statTable: Record<string, number>, selected: string[]): void {
+    const stat: Record<string, number> = {};
+    const list = Object.keys(statTable);
+    for (const item of list) {
+      if (selected.includes(item)) {
+        const stats = item.split('|');
+        for (const s of stats) {
+          stat[s] = stat[s] || 0;
+          stat[s] += this.getGrade(this.type) * statTable[item];
+        }
+      } else {
+        stat[item] = 0;
+      }
+    }
+    this.logList.push(stat);
+  }
+
+  roll_live(): void {
     const statTable = getStatTable(this.level);
     const statList = Object.keys(statTable);
     const selected = [];
@@ -64,20 +82,29 @@ export class AppComponent implements OnInit {
       }
     }
 
-    const stat: Record<string, number> = {};
-    const list = Object.keys(statTable);
-    for (const item of list) {
-      if (selected.includes(item)) {
-        const stats = item.split('|');
-        for (const s of stats) {
-          stat[s] = stat[s] || 0;
-          stat[s] += this.getGrade(this.type) * statTable[item];
-        }
-      } else {
-        stat[item] = 0;
-      }
+    this.addLog(statTable, selected);
+  }
+
+  roll_test(): void {
+    const statTable = getStatTable(this.level);
+    const statList = Object.keys(statTable);
+    const selected = [];
+
+    for (let i = 0; i <= 3; i += 1) {
+      const [result, index] = this.arrayPick(statList);
+      selected.push(result);
+      statList.splice(index, 1);
     }
-    this.logList.push(stat);
+
+    this.addLog(statTable, selected);
+  }
+
+  roll(): void {
+    if (this.mode === '본섭') {
+      this.roll_live();
+    } else if (this.mode === '테섭') {
+      this.roll_test();
+    }
   }
 
   roll10(): void {
