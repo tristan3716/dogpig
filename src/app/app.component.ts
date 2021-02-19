@@ -16,22 +16,7 @@ export class AppComponent implements OnInit {
   mode = '본섭';
   logList: Array<Record<string, number>> = [];
 
-  chartOption: EChartsOption = {
-    tooltip: {},
-    xAxis: {
-      type: 'category',
-      data: [],
-    },
-    yAxis: {
-      type: 'value',
-    },
-    series: [
-      {
-        data: [],
-        type: 'bar',
-      },
-    ],
-  };
+  chartOption: EChartsOption = {};
 
   constructor() {}
 
@@ -66,48 +51,95 @@ export class AppComponent implements OnInit {
   }
 
   private addLog(statTable: Record<string, number>, selected: string[]): void {
-    const stat: Record<string, number> = {};
-    const list = Object.keys(statTable);
-    for (const item of list) {
-      if (selected.includes(item)) {
-        const stats = item.split('|');
-        for (const s of stats) {
-          stat[s] = stat[s] || 0;
-          stat[s] += this.getGrade(this.type) * statTable[item];
-        }
-      } else {
-        stat[item] = 0;
+    const stat: Record<string, number> = {
+      STR: 0,
+      DEX: 0,
+      INT: 0,
+      LUK: 0,
+      MaxHP: 0,
+      MaxMP: 0,
+      '착용 레벨 감소': 0,
+      방어력: 0,
+      공격력: 0,
+      마력: 0,
+      이동속도: 0,
+      점프력: 0,
+      '올스탯%': 0,
+    };
+    for (const item of selected) {
+      const stats = item.split('|');
+      for (const s of stats) {
+        stat[s] += this.getGrade(this.type) * statTable[item];
       }
     }
-    stat.급 = Math.max(
-      stat.STR + stat.공격력 * 4 + stat['올스탯%'] * 10,
-      stat.DEX + stat.마력 * 4 + stat['올스탯%'] * 10,
-      stat.INT + stat.마력 * 4 + stat['올스탯%'] * 10,
-      stat.LUK + stat.공격력 * 4 + stat['올스탯%'] * 10
-    );
+    stat.힘급 = stat.STR + stat.공격력 * 4 + stat['올스탯%'] * 10;
+    stat.덱급 = stat.DEX + stat.공격력 * 4 + stat['올스탯%'] * 10;
+    stat.인급 = stat.INT + stat.마력 * 4 + stat['올스탯%'] * 10;
+    stat.럭급 = stat.LUK + stat.공격력 * 4 + stat['올스탯%'] * 10;
+    stat.급 = Math.max(stat.힘급, stat.덱급, stat.인급, stat.럭급);
     this.logList.push(stat);
+  }
 
-    const numbers = this.logList.map((x) => x.급);
+  private drawChart(): void {
     const category = [];
-    const values = [];
-    for (let i = 0; i <= 190; i += 10) {
+    const valuesSTR = [];
+    const valuesDEX = [];
+    const valuesINT = [];
+    const valuesLUK = [];
+    for (let i = 0; i <= 130; i += 10) {
       category.push(i);
-      values.push(numbers.filter((x) => x >= i && x < i + 10).length / numbers.length);
+      valuesSTR.push(
+        this.logList.map((x) => x.힘급).filter((x) => x >= i && x < i + 10)
+          .length / this.logList.length
+      );
+      valuesDEX.push(
+        this.logList.map((x) => x.덱급).filter((x) => x >= i && x < i + 10)
+          .length / this.logList.length
+      );
+      valuesINT.push(
+        this.logList.map((x) => x.인급).filter((x) => x >= i && x < i + 10)
+          .length / this.logList.length
+      );
+      valuesLUK.push(
+        this.logList.map((x) => x.럭급).filter((x) => x >= i && x < i + 10)
+          .length / this.logList.length
+      );
     }
     this.chartOption = {
       tooltip: {},
+      legend: {
+        data: ['STR', 'DEX', 'INT', 'LUK'],
+      },
       xAxis: {
         type: 'category',
         data: category,
       },
       yAxis: {
         type: 'value',
-        max: Math.max(0.3, ...values),
+        max: 0.3,
       },
-      series: {
-        type: 'bar',
-        data: values,
-      },
+      series: [
+        {
+          type: 'bar',
+          name: 'STR',
+          data: valuesSTR,
+        },
+        {
+          type: 'bar',
+          name: 'DEX',
+          data: valuesDEX,
+        },
+        {
+          type: 'bar',
+          name: 'INT',
+          data: valuesINT,
+        },
+        {
+          type: 'bar',
+          name: 'LUK',
+          data: valuesLUK,
+        },
+      ],
     };
   }
 
@@ -166,12 +198,14 @@ export class AppComponent implements OnInit {
     } else if (this.mode === '테섭') {
       this.roll_test();
     }
+    this.drawChart();
   }
 
   roll100(): void {
     for (let i = 0; i < 100; i += 1) {
       this.roll();
     }
+    this.drawChart();
   }
 
   reset(): void {
