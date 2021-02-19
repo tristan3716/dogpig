@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { getStatTable, gradeTable, weightTable } from './table';
 import * as Chance from 'chance';
+import { EChartsOption } from 'echarts';
 const chance = new Chance();
 
 @Component({
@@ -10,10 +11,27 @@ const chance = new Chance();
 })
 export class AppComponent implements OnInit {
   title = 'dogpig';
-  level = 150;
+  level = 160;
   type = '영원한 환생의 불꽃';
   mode = '본섭';
-  logList: any[] = [];
+  logList: Array<Record<string, number>> = [];
+
+  chartOption: EChartsOption = {
+    tooltip: {},
+    xAxis: {
+      type: 'category',
+      data: [],
+    },
+    yAxis: {
+      type: 'value',
+    },
+    series: [
+      {
+        data: [],
+        type: 'bar',
+      },
+    ],
+  };
 
   constructor() {}
 
@@ -68,6 +86,30 @@ export class AppComponent implements OnInit {
       stat.LUK + stat.공격력 * 4 + stat['올스탯%'] * 10
     );
     this.logList.push(stat);
+
+    const numbers = this.logList.map((x) => x.급);
+    const maximum = Math.max(...numbers);
+    const minimum = Math.min(...numbers);
+    const category = [];
+    const values = [];
+    for (let i = Math.floor(minimum / 10) * 10; i < maximum; i += 10) {
+      category.push(i);
+      values.push(numbers.filter((x) => x >= i && x < i + 10).length);
+    }
+    this.chartOption = {
+      tooltip: {},
+      xAxis: {
+        type: 'category',
+        data: category,
+      },
+      yAxis: {
+        type: 'value',
+      },
+      series: {
+        type: 'bar',
+        data: values,
+      },
+    };
   }
 
   roll_live(): void {
@@ -127,8 +169,8 @@ export class AppComponent implements OnInit {
     }
   }
 
-  roll10(): void {
-    for (let i = 0; i < 10; i += 1) {
+  roll100(): void {
+    for (let i = 0; i < 100; i += 1) {
       this.roll();
     }
   }
