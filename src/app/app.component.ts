@@ -86,7 +86,7 @@ export class AppComponent implements OnInit {
     const valuesDEX = [];
     const valuesINT = [];
     const valuesLUK = [];
-    for (let i = 0; i <= 130; i += 10) {
+    for (let i = 0; i <= 200; i += 10) {
       category.push(i);
       valuesSTR.push(
         this.logList.map((x) => x.힘급).filter((x) => x >= i && x < i + 10)
