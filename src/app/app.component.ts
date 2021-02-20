@@ -82,6 +82,13 @@ export class AppComponent implements OnInit {
     stat.덱급 = stat.DEX + stat.공격력 * 4 + stat['올스탯%'] * 10;
     stat.인급 = stat.INT + stat.마력 * 4 + stat['올스탯%'] * 10;
     stat.럭급 = stat.LUK + stat.공격력 * 4 + stat['올스탯%'] * 10;
+    stat.제논급 =
+      (stat.STR +
+        stat.DEX +
+        stat.LUK +
+        stat.공격력 * 7 +
+        stat['올스탯%'] * 20) /
+      2;
     stat.급 = Math.max(stat.힘급, stat.덱급, stat.인급, stat.럭급);
     this.logList.push(stat);
   }
@@ -92,6 +99,7 @@ export class AppComponent implements OnInit {
     const valuesDEX = [];
     const valuesINT = [];
     const valuesLUK = [];
+    const valuesXenon = [];
     for (let i = 0; i <= 200; i += 10) {
       category.push(i);
       valuesSTR.push(
@@ -110,6 +118,10 @@ export class AppComponent implements OnInit {
         this.logList.map((x) => x.럭급).filter((x) => x >= i && x < i + 10)
           .length / this.logList.length
       );
+      valuesXenon.push(
+        this.logList.map((x) => x.제논급).filter((x) => x >= i && x < i + 10)
+          .length / this.logList.length
+      );
     }
     this.histogramOption = {
       title: {
@@ -118,7 +130,7 @@ export class AppComponent implements OnInit {
       },
       tooltip: {},
       legend: {
-        data: ['STR', 'DEX', 'INT', 'LUK'],
+        data: ['STR', 'DEX', 'INT', 'LUK', 'Xenon'],
         top: 'bottom',
       },
       xAxis: {
@@ -128,6 +140,13 @@ export class AppComponent implements OnInit {
       yAxis: {
         type: 'value',
         max: 0.3,
+      },
+      toolbox: {
+        feature: {
+          dataZoom: {},
+          restore: {},
+          saveAsImage: {},
+        },
       },
       series: [
         {
@@ -150,6 +169,11 @@ export class AppComponent implements OnInit {
           name: 'LUK',
           data: valuesLUK,
         },
+        {
+          type: 'bar',
+          name: 'Xenon',
+          data: valuesXenon,
+        },
       ],
     };
   }
@@ -160,6 +184,7 @@ export class AppComponent implements OnInit {
     const valuesDEX = [];
     const valuesINT = [];
     const valuesLUK = [];
+    const valuesXenon = [];
     for (let i = 0; i <= 200; i += 10) {
       category.push(i);
       valuesSTR.push(
@@ -178,6 +203,10 @@ export class AppComponent implements OnInit {
         this.logList.map((x) => x.럭급).filter((x) => x >= i).length /
           this.logList.length
       );
+      valuesXenon.push(
+        this.logList.map((x) => x.제논급).filter((x) => x >= i).length /
+          this.logList.length
+      );
     }
     this.inverseCumulativeOption = {
       title: {
@@ -186,7 +215,7 @@ export class AppComponent implements OnInit {
       },
       tooltip: {},
       legend: {
-        data: ['STR', 'DEX', 'INT', 'LUK'],
+        data: ['STR', 'DEX', 'INT', 'LUK', 'Xenon'],
         top: 'bottom',
       },
       xAxis: {
@@ -196,6 +225,13 @@ export class AppComponent implements OnInit {
       yAxis: {
         type: 'value',
         max: 1,
+      },
+      toolbox: {
+        feature: {
+          dataZoom: {},
+          restore: {},
+          saveAsImage: {},
+        },
       },
       series: [
         {
@@ -217,6 +253,11 @@ export class AppComponent implements OnInit {
           type: 'bar',
           name: 'LUK',
           data: valuesLUK,
+        },
+        {
+          type: 'bar',
+          name: 'Xenon',
+          data: valuesXenon,
         },
       ],
     };
