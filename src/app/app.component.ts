@@ -234,5 +234,6 @@ export class AppComponent implements OnInit {
 
   reset(): void {
     this.logList = [];
+    this.drawChart();
   }
 }
