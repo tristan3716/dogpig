@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { getStatTable, gradeTable, weightTable } from './table';
+import {Component, OnInit} from '@angular/core';
+import {getStatTable, gradeTable, weightTable} from './table';
 import * as Chance from 'chance';
-import { EChartsOption } from 'echarts';
+import {EChartsOption} from 'echarts';
+
 const chance = new Chance();
 
 @Component({
@@ -14,13 +15,16 @@ export class AppComponent implements OnInit {
   level = 160;
   type = '영원한 환생의 불꽃';
   mode = '본섭';
+  gen_iter = 100;
   logList: Array<Record<string, number>> = [];
 
   chartOption: EChartsOption = {};
 
-  constructor() {}
+  constructor() {
+  }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+  }
 
   private pickWeighted(arr: string[]): string {
     if (arr.length === 0) {
@@ -177,6 +181,24 @@ export class AppComponent implements OnInit {
     this.addLog(statTable, selected);
   }
 
+  roll_no_hero(): void {
+    const statTable = getStatTable(this.level);
+    const statList = Object.keys(statTable);
+    const selected = [];
+
+    for (let i = 1; i <= 4; i += 1) {
+      const result = this.pickWeighted(statList);
+      selected.push(result);
+      statList.forEach((value, index) => {
+        if (value === result) {
+          statList.splice(index, 1);
+        }
+      });
+    }
+
+    this.addLog(statTable, selected);
+  }
+
   roll_test(): void {
     const statTable = getStatTable(this.level);
     const statList = Object.keys(statTable);
@@ -192,18 +214,20 @@ export class AppComponent implements OnInit {
     this.addLog(statTable, selected);
   }
 
-  roll(): void {
+  roll(skipDraw: boolean = false): void {
     if (this.mode === '본섭') {
       this.roll_live();
     } else if (this.mode === '테섭') {
       this.roll_test();
+    } else if (this.mode === '비복원'){
+      this.roll_no_hero();
     }
-    this.drawChart();
+    if(!skipDraw) this.drawChart();
   }
 
-  roll100(): void {
-    for (let i = 0; i < 100; i += 1) {
-      this.roll();
+  rollIterate(iterTimes: number = 100): void {
+    for (let i = 0; i < iterTimes; i += 1) {
+      this.roll(true);
     }
     this.drawChart();
   }

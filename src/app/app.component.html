@@ -8,69 +8,102 @@
   </header>
   <div class="content-container">
     <div class="content-area">
-      <select clrSelect name="level" [(ngModel)]="level">
-        <option [value]="130">130</option>
-        <option [value]="140">140</option>
-        <option [value]="150">150</option>
-        <option [value]="160">160</option>
-        <option [value]="200">200</option>
-      </select>
-      <select clrSelect name="type" [(ngModel)]="type">
-        <option value="강력한 환생의 불꽃">강력한 환생의 불꽃</option>
-        <option value="영원한 환생의 불꽃">영원한 환생의 불꽃</option>
-      </select>
-      <select clrSelect name="mode" [(ngModel)]="mode">
-        <option value="본섭">본섭</option>
-        <option value="테섭">테섭</option>
-      </select>
+      <div style="display: table;">
+        <label style="display: table-cell;">아이템 레벨제한: </label>
+        <select clrSelect id="lvl" name="level" [(ngModel)]="level" style="display: table-cell;">
+          <option [value]="130">130</option>
+          <option [value]="140">140</option>
+          <option [value]="150">150</option>
+          <option [value]="160">160</option>
+          <option [value]="200">200</option>
+        </select>
+      </div>
+      <div style="display: table;">
+        <label style="display: table-cell;">환생의 불꽃 타입: </label>
+        <select clrSelect name="type" [(ngModel)]="type" style="display: table-cell;">
+          <option value="강력한 환생의 불꽃">강력한 환생의 불꽃</option>
+          <option value="영원한 환생의 불꽃">영원한 환생의 불꽃</option>
+        </select>
+      </div>
+      <div style="display: table;">
+        <label style="display: table-cell;">추가옵션 로직: </label>
+        <select clrSelect name="mode" [(ngModel)]="mode" style="display: table-cell;">
+          <option value="본섭">본섭</option>
+          <option value="테섭">테섭</option>
+          <option value="비복원">가중치 비복원</option>
+        </select>
+      </div>
+      <div style="display: table;">
+        <label style="display: table-cell;">N회 생성 반복횟수: </label>
+        <select clrSelect name="gen_iter" [(ngModel)]="gen_iter" style="display: table-cell;">
+          <option value=10>10회</option>
+          <option value=100>100회</option>
+          <option value=1000>1000회</option>
+          <option value=10000>10000회</option>
+        </select>
+      </div>
       <button (click)="roll()" class="btn btn-primary">Generate</button>
-      <button (click)="roll100()" class="btn btn-primary">Generate100</button>
+      <button (click)="rollIterate(gen_iter)" class="btn btn-primary">Generate N</button>
       <button (click)="reset()" class="btn btn-warning">Reset</button>
 
       <div echarts [options]="chartOption" class="demo-chart"></div>
 
       <clr-datagrid>
         <clr-dg-column [clrDgColType]="'number'" [clrDgField]="'STR'"
-          >STR</clr-dg-column
+        >STR
+        </clr-dg-column
         >
         <clr-dg-column [clrDgColType]="'number'" [clrDgField]="'DEX'"
-          >DEX</clr-dg-column
+        >DEX
+        </clr-dg-column
         >
         <clr-dg-column [clrDgColType]="'number'" [clrDgField]="'INT'"
-          >INT</clr-dg-column
+        >INT
+        </clr-dg-column
         >
         <clr-dg-column [clrDgColType]="'number'" [clrDgField]="'LUK'"
-          >LUK</clr-dg-column
+        >LUK
+        </clr-dg-column
         >
         <clr-dg-column [clrDgColType]="'number'" [clrDgField]="'MaxHP'"
-          >MaxHP</clr-dg-column
+        >MaxHP
+        </clr-dg-column
         >
         <clr-dg-column [clrDgColType]="'number'" [clrDgField]="'MaxMP'"
-          >MaxMP</clr-dg-column
+        >MaxMP
+        </clr-dg-column
         >
         <clr-dg-column [clrDgColType]="'number'" [clrDgField]="'착용 레벨 감소'"
-          >착용 레벨 감소</clr-dg-column
+        >착용 레벨 감소
+        </clr-dg-column
         >
         <clr-dg-column [clrDgColType]="'number'" [clrDgField]="'방어력'"
-          >방어력</clr-dg-column
+        >방어력
+        </clr-dg-column
         >
         <clr-dg-column [clrDgColType]="'number'" [clrDgField]="'공격력'"
-          >공격력</clr-dg-column
+        >공격력
+        </clr-dg-column
         >
         <clr-dg-column [clrDgColType]="'number'" [clrDgField]="'마력'"
-          >마력</clr-dg-column
+        >마력
+        </clr-dg-column
         >
         <clr-dg-column [clrDgColType]="'number'" [clrDgField]="'이동속도'"
-          >이동속도</clr-dg-column
+        >이동속도
+        </clr-dg-column
         >
         <clr-dg-column [clrDgColType]="'number'" [clrDgField]="'점프력'"
-          >점프력</clr-dg-column
+        >점프력
+        </clr-dg-column
         >
         <clr-dg-column [clrDgColType]="'number'" [clrDgField]="'올스탯%'"
-          >올스탯%</clr-dg-column
+        >올스탯%
+        </clr-dg-column
         >
         <clr-dg-column [clrDgColType]="'number'" [clrDgField]="'급'"
-          >급</clr-dg-column
+        >급
+        </clr-dg-column
         >
 
         <clr-dg-row *clrDgItems="let log of logList">
@@ -93,7 +126,8 @@
         <clr-dg-footer>
           <clr-dg-pagination #pagination [clrDgPageSize]="10">
             <clr-dg-page-size [clrPageSizeOptions]="[10, 20, 50, 100]"
-              >Logs per page</clr-dg-page-size
+            >Logs per page
+            </clr-dg-page-size
             >
             {{ pagination.firstItem + 1 }} - {{ pagination.lastItem + 1 }} of
             {{ pagination.totalItems }} logs
