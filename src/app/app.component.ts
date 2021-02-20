@@ -1,7 +1,8 @@
-import {Component, OnInit} from '@angular/core';
-import {getStatTable, gradeTable, weightTable} from './table';
+import { Component, OnInit } from '@angular/core';
+import { getStatTable, gradeTable, weightTable } from './table';
 import * as Chance from 'chance';
-import {EChartsOption} from 'echarts';
+import { EChartsOption } from 'echarts';
+import { FormControl, FormGroup } from '@angular/forms';
 
 const chance = new Chance();
 
@@ -11,20 +12,20 @@ const chance = new Chance();
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  title = 'dogpig';
-  level = 160;
-  type = '영원한 환생의 불꽃';
-  mode = '본섭';
-  gen_iter = 100;
+  formGroup = new FormGroup({
+    level: new FormControl(160),
+    type: new FormControl('영원한 환생의 불꽃'),
+    mode: new FormControl('본섭'),
+    iter: new FormControl(1000),
+  });
   logList: Array<Record<string, number>> = [];
 
-  chartOption: EChartsOption = {};
+  histogramOption: EChartsOption = {};
+  inverseCumulativeOption: EChartsOption = {};
 
-  constructor() {
-  }
+  constructor() {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   private pickWeighted(arr: string[]): string {
     if (arr.length === 0) {
@@ -72,8 +73,9 @@ export class AppComponent implements OnInit {
     };
     for (const item of selected) {
       const stats = item.split('|');
+      const grade = this.getGrade(this.formGroup.value.type);
       for (const s of stats) {
-        stat[s] += this.getGrade(this.type) * statTable[item];
+        stat[s] += grade * statTable[item];
       }
     }
     stat.힘급 = stat.STR + stat.공격력 * 4 + stat['올스탯%'] * 10;
@@ -84,7 +86,7 @@ export class AppComponent implements OnInit {
     this.logList.push(stat);
   }
 
-  private drawChart(): void {
+  private drawHistogram(): void {
     const category = [];
     const valuesSTR = [];
     const valuesDEX = [];
@@ -109,10 +111,15 @@ export class AppComponent implements OnInit {
           .length / this.logList.length
       );
     }
-    this.chartOption = {
+    this.histogramOption = {
+      title: {
+        text: '히스토그램',
+        left: 'center',
+      },
       tooltip: {},
       legend: {
         data: ['STR', 'DEX', 'INT', 'LUK'],
+        top: 'bottom',
       },
       xAxis: {
         type: 'category',
@@ -147,8 +154,76 @@ export class AppComponent implements OnInit {
     };
   }
 
+  private drawInverseCumulative(): void {
+    const category = [];
+    const valuesSTR = [];
+    const valuesDEX = [];
+    const valuesINT = [];
+    const valuesLUK = [];
+    for (let i = 0; i <= 200; i += 10) {
+      category.push(i);
+      valuesSTR.push(
+        this.logList.map((x) => x.힘급).filter((x) => x >= i).length /
+          this.logList.length
+      );
+      valuesDEX.push(
+        this.logList.map((x) => x.덱급).filter((x) => x >= i).length /
+          this.logList.length
+      );
+      valuesINT.push(
+        this.logList.map((x) => x.인급).filter((x) => x >= i).length /
+          this.logList.length
+      );
+      valuesLUK.push(
+        this.logList.map((x) => x.럭급).filter((x) => x >= i).length /
+          this.logList.length
+      );
+    }
+    this.inverseCumulativeOption = {
+      title: {
+        text: '역 누적분포 히스토그램',
+        left: 'center',
+      },
+      tooltip: {},
+      legend: {
+        data: ['STR', 'DEX', 'INT', 'LUK'],
+        top: 'bottom',
+      },
+      xAxis: {
+        type: 'category',
+        data: category,
+      },
+      yAxis: {
+        type: 'value',
+        max: 1,
+      },
+      series: [
+        {
+          type: 'bar',
+          name: 'STR',
+          data: valuesSTR,
+        },
+        {
+          type: 'bar',
+          name: 'DEX',
+          data: valuesDEX,
+        },
+        {
+          type: 'bar',
+          name: 'INT',
+          data: valuesINT,
+        },
+        {
+          type: 'bar',
+          name: 'LUK',
+          data: valuesLUK,
+        },
+      ],
+    };
+  }
+
   roll_live(): void {
-    const statTable = getStatTable(this.level);
+    const statTable = getStatTable(this.formGroup.value.level);
     const statList = Object.keys(statTable);
     const selected = [];
 
@@ -181,26 +256,8 @@ export class AppComponent implements OnInit {
     this.addLog(statTable, selected);
   }
 
-  roll_no_hero(): void {
-    const statTable = getStatTable(this.level);
-    const statList = Object.keys(statTable);
-    const selected = [];
-
-    for (let i = 1; i <= 4; i += 1) {
-      const result = this.pickWeighted(statList);
-      selected.push(result);
-      statList.forEach((value, index) => {
-        if (value === result) {
-          statList.splice(index, 1);
-        }
-      });
-    }
-
-    this.addLog(statTable, selected);
-  }
-
   roll_test(): void {
-    const statTable = getStatTable(this.level);
+    const statTable = getStatTable(this.formGroup.value.level);
     const statList = Object.keys(statTable);
     const selected = [];
 
@@ -214,26 +271,25 @@ export class AppComponent implements OnInit {
     this.addLog(statTable, selected);
   }
 
-  roll(skipDraw: boolean = false): void {
-    if (this.mode === '본섭') {
+  _roll(): void {
+    if (this.formGroup.value.mode === '본섭') {
       this.roll_live();
-    } else if (this.mode === '테섭') {
+    } else if (this.formGroup.value.mode === '테섭') {
       this.roll_test();
-    } else if (this.mode === '비복원'){
-      this.roll_no_hero();
     }
-    if(!skipDraw) this.drawChart();
   }
 
-  rollIterate(iterTimes: number = 100): void {
-    for (let i = 0; i < iterTimes; i += 1) {
-      this.roll(true);
+  roll(iter: number): void {
+    for (let i = 0; i < iter; i += 1) {
+      this._roll();
     }
-    this.drawChart();
+    this.drawHistogram();
+    this.drawInverseCumulative();
   }
 
   reset(): void {
     this.logList = [];
-    this.drawChart();
+    this.drawHistogram();
+    this.drawInverseCumulative();
   }
 }
