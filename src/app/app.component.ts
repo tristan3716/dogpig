@@ -3,6 +3,7 @@ import { getStatTable, gradeTable, weightTable } from './table';
 import * as Chance from 'chance';
 import { EChartsOption } from 'echarts';
 import { FormControl, FormGroup } from '@angular/forms';
+import { getChart } from './chart';
 
 const chance = new Chance();
 
@@ -123,59 +124,12 @@ export class AppComponent implements OnInit {
           .length / this.logList.length
       );
     }
-    this.histogramOption = {
-      title: {
-        text: '히스토그램',
-        left: 'center',
-      },
-      tooltip: {},
-      legend: {
-        data: ['STR', 'DEX', 'INT', 'LUK', 'Xenon'],
-        top: 'bottom',
-      },
-      xAxis: {
-        type: 'category',
-        data: category,
-      },
-      yAxis: {
-        type: 'value',
-        max: 0.3,
-      },
-      toolbox: {
-        feature: {
-          dataZoom: {},
-          restore: {},
-          saveAsImage: {},
-        },
-      },
-      series: [
-        {
-          type: 'bar',
-          name: 'STR',
-          data: valuesSTR,
-        },
-        {
-          type: 'bar',
-          name: 'DEX',
-          data: valuesDEX,
-        },
-        {
-          type: 'bar',
-          name: 'INT',
-          data: valuesINT,
-        },
-        {
-          type: 'bar',
-          name: 'LUK',
-          data: valuesLUK,
-        },
-        {
-          type: 'bar',
-          name: 'Xenon',
-          data: valuesXenon,
-        },
-      ],
-    };
+    this.histogramOption = getChart(
+      '히스토그램',
+      category,
+      ['STR', 'DEX', 'INT', 'LUK', 'Xenon'],
+      [valuesSTR, valuesDEX, valuesINT, valuesLUK, valuesXenon]
+    );
   }
 
   private drawInverseCumulative(): void {
@@ -208,59 +162,12 @@ export class AppComponent implements OnInit {
           this.logList.length
       );
     }
-    this.inverseCumulativeOption = {
-      title: {
-        text: '역 누적분포 히스토그램',
-        left: 'center',
-      },
-      tooltip: {},
-      legend: {
-        data: ['STR', 'DEX', 'INT', 'LUK', 'Xenon'],
-        top: 'bottom',
-      },
-      xAxis: {
-        type: 'category',
-        data: category,
-      },
-      yAxis: {
-        type: 'value',
-        max: 1,
-      },
-      toolbox: {
-        feature: {
-          dataZoom: {},
-          restore: {},
-          saveAsImage: {},
-        },
-      },
-      series: [
-        {
-          type: 'bar',
-          name: 'STR',
-          data: valuesSTR,
-        },
-        {
-          type: 'bar',
-          name: 'DEX',
-          data: valuesDEX,
-        },
-        {
-          type: 'bar',
-          name: 'INT',
-          data: valuesINT,
-        },
-        {
-          type: 'bar',
-          name: 'LUK',
-          data: valuesLUK,
-        },
-        {
-          type: 'bar',
-          name: 'Xenon',
-          data: valuesXenon,
-        },
-      ],
-    };
+    this.inverseCumulativeOption = getChart(
+      '역 누적분포 히스토그램',
+      category,
+      ['STR', 'DEX', 'INT', 'LUK', 'Xenon'],
+      [valuesSTR, valuesDEX, valuesINT, valuesLUK, valuesXenon]
+    );
   }
 
   roll_live(): void {
