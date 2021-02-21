@@ -128,7 +128,8 @@ export class AppComponent implements OnInit {
       '히스토그램',
       category,
       ['STR', 'DEX', 'INT', 'LUK', 'Xenon'],
-      [valuesSTR, valuesDEX, valuesINT, valuesLUK, valuesXenon]
+      [valuesSTR, valuesDEX, valuesINT, valuesLUK, valuesXenon],
+      0.3
     );
   }
 
@@ -166,7 +167,8 @@ export class AppComponent implements OnInit {
       '역 누적분포 히스토그램',
       category,
       ['STR', 'DEX', 'INT', 'LUK', 'Xenon'],
-      [valuesSTR, valuesDEX, valuesINT, valuesLUK, valuesXenon]
+      [valuesSTR, valuesDEX, valuesINT, valuesLUK, valuesXenon],
+      1
     );
   }
 

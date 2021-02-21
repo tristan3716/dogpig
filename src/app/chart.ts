@@ -4,7 +4,8 @@ export function getChart(
   title: string,
   categories: number[],
   legends: string[],
-  datas: number[][]
+  datas: number[][],
+  ylim: number,
 ): EChartsOption {
   return {
     title: {
@@ -22,7 +23,7 @@ export function getChart(
     },
     yAxis: {
       type: 'value',
-      max: 1,
+      max: ylim,
     },
     toolbox: {
       feature: {
