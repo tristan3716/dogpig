@@ -33,7 +33,7 @@ export function getChart(
     },
     series: datas.map((data, idx) => ({
       type: 'bar',
-      name: categories[idx],
+      name: legends[idx],
       data,
     })),
   };
